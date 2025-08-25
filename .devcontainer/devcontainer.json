@@ -1,0 +1,68 @@
+{
+  "name": "android-tauri-dev",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "remoteUser": "vscode",
+  "containerEnv": {
+    "NDK_HOME": "/usr/local/lib/android/ndk/25.2.9519653",
+    "VNC_RESOLUTION": "1024x768x32"
+  },
+  "runArgs": [
+    "--shm-size=2g",
+    "--device=/dev/kvm",
+    "--group-add",
+    "kvm"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/rust:1": {
+      "version": "1.89"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22"
+    },
+    "ghcr.io/devcontainers/features/desktop-lite:1": {
+      "password": "noPassword"
+    },
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "17"
+    },
+    "ghcr.io/nordcominc/devcontainer-features/android-sdk:1": {
+      "platform": "35",
+      "buildTools": "35.0.0",
+      "extra_packages": "emulator platform-tools system-images;android-35;google_apis;x86_64"
+    }
+  },
+  "forwardPorts": [
+    5173,
+    6080,
+    9222,
+    9229
+  ],
+  "portsAttributes": {
+    "5173": {
+      "label": "Vite Dev Server",
+      "onAutoForward": "notify"
+    },
+    "6080": {
+      "label": "VNC Desktop (noVNC)",
+      "onAutoForward": "notify"
+    },
+    "9222": {
+      "label": "Chrome DevTools",
+      "onAutoForward": "notify"
+    },
+    "9229": {
+      "label": "Node.js Inspector",
+      "onAutoForward": "silent"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "tauri-apps.tauri-vscode",
+        "esbenp.prettier-vscode",
+        "redhat.vscode-yaml"
+      ]
+    }
+  }
+}
