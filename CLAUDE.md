@@ -9,13 +9,12 @@
 ## Debugging
 
 - Use Android screenshots liberally to help debug problems with the frontend and iterate.
+- Use `npm run quickfix` frequently to fix linting and formatting errors.
 - When debugging, you can tail the log files in `./logs` to help you figure out what's going on.
+- If you ever see a log file that isn't in `./logs`, we should update our config to include it there.
 
 ## Project Notes
 
-- We want to have reproducible commands to build and test the app, so we should maintain `npm run` scripts rather than executing build/test commands directly. If they don't work for you, add or update them.
-- Our `npm` scripts should be able to be run from the project root.
-
-- If you rebuild, you might need to grant permissions using the scripts available in `./scripts`.
-- You might need to run the dev server in the background if running the app in dev mode.
 - We are targeting android only, not desktop.
+- Our main emulator scripts are managed in `./packages/emulator-management`, linked to the `emu` command. Run `emu` to see the available commands.
+- Update the emulator management scripts if you need to rather than running commands directly, so we can reproduce them.

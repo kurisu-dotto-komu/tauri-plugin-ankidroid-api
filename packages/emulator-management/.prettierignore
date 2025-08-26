@@ -1,0 +1,10 @@
+node_modules
+dist
+*.log
+*.min.js
+coverage
+.next
+.nuxt
+.cache
+public
+build
