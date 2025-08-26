@@ -1,5 +1,7 @@
 # Tauri Plugin AnkiDroid API
 
+> WORK IN PROGRESS
+
 A Tauri plugin for integrating with AnkiDroid's database API on Android devices.
 
 ## Quick Start
