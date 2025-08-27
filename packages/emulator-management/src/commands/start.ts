@@ -43,7 +43,7 @@ export async function startEmulator(): Promise<void> {
 
     if (!avdList.includes(CONFIG.avd.name)) {
       spinner.fail(`AVD ${CONFIG.avd.name} not found`);
-      console.error(`\nRun 'emu create' first`);
+      console.error(`\nRun 'emu init' first`);
       process.exit(1);
     }
     spinner.succeed('AVD found');
@@ -148,12 +148,13 @@ export async function startEmulator(): Promise<void> {
     } else {
       spinner.succeed('Emulator booted successfully!');
       logger.info('Boot completed successfully');
-
+      
+      // Configure 3-button navigation
       spinner.start('Setting 3-button navigation mode...');
       await exec(
         paths.adb,
         ['shell', 'cmd', 'overlay', 'enable', 'com.android.internal.systemui.navbar.threebutton'],
-        { logger }
+        { logger, silent: true }
       );
       spinner.succeed('Navigation mode configured');
     }
@@ -165,10 +166,11 @@ export async function startEmulator(): Promise<void> {
       `🖥️  Connect via VNC to view the emulator (display ${CONFIG.emulator.display}, port ${CONFIG.emulator.vncPort})`
     );
     console.log(`📝 Log file: ${logger.getLogFile()}`);
-    console.log(`\nRun 'emu install-anki' to install AnkiDroid`);
 
     if (emulatorProcess) {
       emulatorProcess.unref();
+      console.log('🏃 Running in background...');
+      console.log('   Run "emu stop" to shut down the emulator');
     }
   } catch (error) {
     spinner.fail('Failed to start emulator');

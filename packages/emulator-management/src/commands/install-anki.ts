@@ -134,6 +134,42 @@ export async function installAnkiDroid(reinstall: boolean = false): Promise<void
     }
     spinner.succeed('AnkiDroid installed successfully');
 
+    // Grant file management permissions to AnkiDroid
+    spinner.start('Granting file management permissions to AnkiDroid...');
+    logger.info('Granting file management permissions');
+
+    // Grant MANAGE_EXTERNAL_STORAGE permission
+    await exec(
+      paths.adb,
+      ['shell', 'appops', 'set', CONFIG.ankidroid.packageName, 'MANAGE_EXTERNAL_STORAGE', 'allow'],
+      { logger, silent: true }
+    );
+
+    // Also grant regular storage permissions
+    await exec(
+      paths.adb,
+      [
+        'shell',
+        'pm',
+        'grant',
+        CONFIG.ankidroid.packageName,
+        'android.permission.READ_EXTERNAL_STORAGE',
+      ],
+      { logger, silent: true }
+    );
+    await exec(
+      paths.adb,
+      [
+        'shell',
+        'pm',
+        'grant',
+        CONFIG.ankidroid.packageName,
+        'android.permission.WRITE_EXTERNAL_STORAGE',
+      ],
+      { logger, silent: true }
+    );
+    spinner.succeed('File management permissions granted');
+
     spinner.start('Launching AnkiDroid...');
     logger.info('Launching AnkiDroid application');
 
@@ -151,32 +187,6 @@ export async function installAnkiDroid(reinstall: boolean = false): Promise<void
       { logger }
     );
     spinner.succeed('AnkiDroid launched');
-
-    spinner.start('Adding AnkiDroid to homescreen...');
-    logger.info('Adding AnkiDroid shortcut to homescreen');
-
-    // Send broadcast to add shortcut to homescreen
-    await exec(
-      paths.adb,
-      [
-        'shell',
-        'am',
-        'broadcast',
-        '-a',
-        'com.android.launcher.action.INSTALL_SHORTCUT',
-        '--es',
-        'android.intent.extra.shortcut.NAME',
-        'AnkiDroid',
-        '--es',
-        'android.intent.extra.shortcut.INTENT',
-        `#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;component=${CONFIG.ankidroid.packageName}/.DeckPicker;end`,
-      ],
-      { logger, silent: true }
-    );
-
-    // Wait a moment for the shortcut to be created
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    spinner.succeed('AnkiDroid added to homescreen');
 
     console.log(`\n✅ AnkiDroid installed and running!`);
     console.log(
