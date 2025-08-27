@@ -26,6 +26,15 @@ export class SignalHandler {
     }
   }
 
+  detachAll() {
+    // Clear all cleanup functions to prevent killing processes on exit
+    this.cleanupFunctions = [];
+    // Remove signal handlers
+    process.removeAllListeners('SIGINT');
+    process.removeAllListeners('SIGTERM');
+    process.removeAllListeners('SIGHUP');
+  }
+
   private async cleanup(signal: string) {
     if (this.isCleaningUp) {
       return;

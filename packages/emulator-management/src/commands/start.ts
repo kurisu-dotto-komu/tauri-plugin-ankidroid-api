@@ -148,7 +148,7 @@ export async function startEmulator(): Promise<void> {
     } else {
       spinner.succeed('Emulator booted successfully!');
       logger.info('Boot completed successfully');
-      
+
       // Configure 3-button navigation
       spinner.start('Setting 3-button navigation mode...');
       await exec(
@@ -171,6 +171,10 @@ export async function startEmulator(): Promise<void> {
       emulatorProcess.unref();
       console.log('🏃 Running in background...');
       console.log('   Run "emu stop" to shut down the emulator');
+
+      // Clean exit - detach from emulator process
+      signalHandler.detachAll();
+      process.exit(0);
     }
   } catch (error) {
     spinner.fail('Failed to start emulator');

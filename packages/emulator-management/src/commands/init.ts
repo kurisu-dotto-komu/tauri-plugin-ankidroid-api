@@ -90,4 +90,7 @@ export async function initializeEmulator(): Promise<void> {
   console.log(chalk.gray('\n📝 All logs saved to: ./logs/'));
 
   logger.info('Emulator initialization completed successfully');
+
+  // Exit cleanly - the emulator is already running in background
+  process.exit(0);
 }

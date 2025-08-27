@@ -34,8 +34,7 @@
   "forwardPorts": [
     5173,
     6080,
-    9222,
-    9229
+    9222
   ],
   "portsAttributes": {
     "5173": {
@@ -49,10 +48,6 @@
     "9222": {
       "label": "Chrome DevTools",
       "onAutoForward": "notify"
-    },
-    "9229": {
-      "label": "Node.js Inspector",
-      "onAutoForward": "silent"
     }
   },
   "postCreateCommand": "sudo apt-get update && sudo apt-get install -y libpulse0 && rustup target add x86_64-linux-android && npm install && npm run link-emu && emu init",
