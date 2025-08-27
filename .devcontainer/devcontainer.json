@@ -3,8 +3,8 @@
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
   "remoteUser": "vscode",
   "containerEnv": {
-    "NDK_HOME": "/usr/local/lib/android/ndk/25.2.9519653",
-    "VNC_RESOLUTION": "1024x768x32"
+    "VNC_RESOLUTION": "1024x768x32",
+    "NDK_HOME": "/usr/local/lib/android/ndk/27.3.13750724"
   },
   "runArgs": [
     "--shm-size=2g",
@@ -28,7 +28,7 @@
     "ghcr.io/nordcominc/devcontainer-features/android-sdk:1": {
       "platform": "35",
       "buildTools": "35.0.0",
-      "extra_packages": "emulator platform-tools system-images;android-35;google_apis;x86_64"
+      "extra_packages": "emulator platform-tools system-images;android-35;google_apis;x86_64 ndk;27.3.13750724"
     }
   },
   "forwardPorts": [
@@ -55,7 +55,7 @@
       "onAutoForward": "silent"
     }
   },
-  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y libpulse0 && npm install",
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y libpulse0 && rustup target add x86_64-linux-android && npm install && npm run link-emu && emu init",
   "customizations": {
     "vscode": {
       "extensions": [
