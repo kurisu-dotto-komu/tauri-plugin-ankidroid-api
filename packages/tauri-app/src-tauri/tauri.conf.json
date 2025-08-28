@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "identifier": "com.demo.tauri-app",
   "build": {
-    "beforeDevCommand": "npm run dev",
+    "beforeDevCommand": "lsof -ti:1420 | xargs kill -9 2>/dev/null || true; npm run dev",
     "devUrl": "http://localhost:1420",
     "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist"

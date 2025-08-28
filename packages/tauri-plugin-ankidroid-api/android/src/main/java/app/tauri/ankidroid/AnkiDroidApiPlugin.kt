@@ -123,7 +123,8 @@ class AnkiDroidApiPlugin(private val activity: Activity) : Plugin(activity) {
                         throw Exception("Provider not reachable")
                     }
                     val uri = Uri.parse(NOTES_URI)
-                    val projection = arrayOf("_id", "flds", "tags", "sfld", "did", "mid")
+                    // Start with basic columns that should exist
+                    val projection = arrayOf("_id", "flds", "tags", "sfld")
                     val notes = JSArray()
                     activity.contentResolver.query(uri, projection, null, null, null)?.use { c ->
                         while (c.moveToNext()) {
@@ -145,13 +146,27 @@ class AnkiDroidApiPlugin(private val activity: Activity) : Plugin(activity) {
     private fun cursorToNote(c: Cursor): JSObject {
         val flds = c.getString(1) ?: ""
         val tags = c.getString(2) ?: ""
+        
+        // Convert fields to JSArray
+        val fieldsArray = JSArray()
+        flds.split('\u001F').forEach { field ->
+            fieldsArray.put(field)
+        }
+        
+        // Convert tags to JSArray  
+        val tagsArray = JSArray()
+        tags.split(' ').filter { it.isNotBlank() }.forEach { tag ->
+            tagsArray.put(tag)
+        }
+        
         return JSObject().apply {
             put("id", c.getLong(0))
-            put("fields", flds.split('\u001F'))
-            put("tags", tags.split(' ').filter { it.isNotBlank() })
+            put("fields", fieldsArray)
+            put("tags", tagsArray)
             put("sfld", c.getString(3) ?: "")
-            put("deck_id", c.getLong(4))
-            put("model_id", c.getLong(5))
+            // Set default values for missing columns
+            put("deck_id", 0)
+            put("model_id", 0)
         }
     }
 

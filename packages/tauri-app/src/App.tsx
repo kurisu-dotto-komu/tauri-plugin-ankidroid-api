@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import {
   isAnkiDroidAvailable,
@@ -16,19 +16,28 @@ function App() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [ankiError, setAnkiError] = useState<string>("");
 
+  // Automatically check AnkiDroid when component mounts
+  useEffect(() => {
+    checkAnkiDroid();
+  }, []);
+
   async function greet() {
     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
     setGreetMsg(await invoke("greet", { name }));
   }
 
   async function checkAnkiDroid() {
+    console.log("🔍 checkAnkiDroid called");
     try {
       console.log("User Agent:", navigator.userAgent);
       console.log("Is Android check:", navigator.userAgent.includes("Android"));
+      console.log("📡 Calling isAnkiDroidAvailable...");
       const status = await isAnkiDroidAvailable();
+      console.log("✅ isAnkiDroidAvailable result:", status);
       setAnkiStatus(status);
       setAnkiError("");
     } catch (error) {
+      console.log("❌ Error in checkAnkiDroid:", error);
       setAnkiError(`Error checking AnkiDroid: ${error}`);
     }
   }
@@ -49,16 +58,23 @@ function App() {
   }
 
   async function fetchNotes() {
+    console.log("🔍 fetchNotes called");
     try {
+      console.log("📡 Calling getNotes with limit 10...");
       const fetchedNotes = await getNotes({ limit: 10 });
+      console.log("✅ getNotes successful, received", fetchedNotes.length, "notes");
       setNotes(fetchedNotes);
       setAnkiError("");
     } catch (error) {
+      console.log("❌ Error in fetchNotes:", error);
       if (error instanceof NotSupportedError) {
+        console.log("🚫 NotSupportedError detected");
         setAnkiError("AnkiDroid API is not supported on this platform");
       } else if (error instanceof Error && error.message.includes("Permission not granted")) {
+        console.log("🔒 Permission error detected");
         setAnkiError("Permission not granted. Please grant permission to access AnkiDroid.");
       } else {
+        console.log("💥 General error:", error);
         setAnkiError(`Error fetching notes: ${error}`);
       }
     }
@@ -89,11 +105,14 @@ function App() {
       <h2>AnkiDroid API Test</h2>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "10px", alignItems: "flex-start" }}>
-        <button onClick={checkAnkiDroid}>Check AnkiDroid</button>
-        <button onClick={handleRequestPermission}>Request Permission</button>
-        <button onClick={fetchNotes} disabled={!ankiStatus?.available}>
-          Get Notes (limit: 10)
-        </button>
+        {ankiStatus && !ankiStatus.hasPermission && (
+          <button onClick={handleRequestPermission}>Request Permission</button>
+        )}
+        {ankiStatus?.hasPermission && (
+          <button onClick={fetchNotes}>
+            Get Notes (limit: 10)
+          </button>
+        )}
       </div>
 
       {ankiStatus && (
@@ -129,6 +148,10 @@ function App() {
                 }}
               >
                 <strong>ID:</strong> {note.id}
+                <br />
+                <strong>Deck ID:</strong> {note.deck_id}
+                <br />
+                <strong>Model ID:</strong> {note.model_id}
                 <br />
                 <strong>Fields:</strong> {note.fields.join(" | ")}
                 <br />

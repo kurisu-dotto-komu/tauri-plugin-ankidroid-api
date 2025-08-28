@@ -74,6 +74,19 @@ export async function getNotes(opts?: GetNotesOptions): Promise<Note[]> {
     if (error instanceof NotSupportedError) {
       throw error;
     }
-    throw new Error(`Failed to get notes: ${error}`);
+    
+    // Better error message formatting
+    let errorMessage = "Unknown error";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    } else if (error && typeof error === 'object') {
+      errorMessage = JSON.stringify(error);
+    } else {
+      errorMessage = String(error);
+    }
+    
+    throw new Error(`Failed to get notes: ${errorMessage}`);
   }
 }
