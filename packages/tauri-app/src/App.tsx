@@ -149,10 +149,6 @@ function App() {
               >
                 <strong>ID:</strong> {note.id}
                 <br />
-                <strong>Deck ID:</strong> {note.deck_id}
-                <br />
-                <strong>Model ID:</strong> {note.model_id}
-                <br />
                 <strong>Fields:</strong> {note.fields.join(" | ")}
                 <br />
                 <strong>Tags:</strong> {note.tags.join(", ") || "None"}

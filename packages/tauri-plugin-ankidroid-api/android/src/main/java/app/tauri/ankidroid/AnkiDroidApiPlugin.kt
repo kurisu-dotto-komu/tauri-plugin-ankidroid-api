@@ -164,9 +164,6 @@ class AnkiDroidApiPlugin(private val activity: Activity) : Plugin(activity) {
             put("fields", fieldsArray)
             put("tags", tagsArray)
             put("sfld", c.getString(3) ?: "")
-            // Set default values for missing columns
-            put("deck_id", 0)
-            put("model_id", 0)
         }
     }
 
