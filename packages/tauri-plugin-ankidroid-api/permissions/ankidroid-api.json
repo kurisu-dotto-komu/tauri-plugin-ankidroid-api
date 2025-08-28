@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "commands": {
+    "plugin:ankidroid-api|isAnkiDroidAvailable": {
+      "windows": ["*"],
+      "platforms": ["android"]
+    },
+    "plugin:ankidroid-api|getNotes": {
+      "windows": ["*"],
+      "platforms": ["android"]
+    },
+    "plugin:ankidroid-api|checkPermission": {
+      "windows": ["*"],
+      "platforms": ["android"]
+    },
+    "plugin:ankidroid-api|requestPermission": {
+      "windows": ["*"],
+      "platforms": ["android"]
+    }
+  }
+}

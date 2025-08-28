@@ -9,11 +9,12 @@ export default defineConfig({
   reporter: "list",
   use: {
     trace: "on-first-retry",
-    // screenshot: "only-on-failure",
-    // video: "retain-on-failure",
   },
   timeout: 30000,
   expect: {
     timeout: 10000,
+  },
+  webServer: {
+    command: "npm run android:dev",
   },
 });

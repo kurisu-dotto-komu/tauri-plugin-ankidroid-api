@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "dev": "npm run android:dev --workspace=tauri-app",
+    "test": "npm run test --workspace=tauri-app",
     "build": "npm run android:build --workspace=tauri-app",
     "link-emu": "cd packages/emulator-management && npm link --force && cd ../.. && npm link emulator-management",
     "quickfix": "npm run quickfix --workspaces"

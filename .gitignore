@@ -1,3 +1,6 @@
 third-party-apks/
 logs/
 node_modules/
+screenshots/
+test-results/
+.last-run.json

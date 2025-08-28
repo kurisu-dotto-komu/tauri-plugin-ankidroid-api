@@ -1,10 +1,13 @@
 {
-  "$schema": "../gen/schemas/desktop-schema.json",
+  "$schema": "../gen/schemas/android-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "opener:default"
+    "ankidroid-api:allow-isAnkiDroidAvailable",
+    "ankidroid-api:allow-getNotes",
+    "ankidroid-api:allow-checkPermission",
+    "ankidroid-api:allow-requestPermission"
   ]
 }
