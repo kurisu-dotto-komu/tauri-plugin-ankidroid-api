@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
 import { program } from 'commander';
+import { grantAppPermissions } from './commands/app-permissions.js';
 import { createAVD } from './commands/create.js';
 import { initializeEmulator } from './commands/init.js';
 import { installAnkiDroid } from './commands/install-anki.js';
+import { takeScreenshot } from './commands/screenshot.js';
 import { startEmulator, stopEmulator } from './commands/start.js';
 import { Logger } from './utils/logger.js';
 
@@ -58,6 +60,21 @@ program
   .description('Show the logs directory path')
   .action(() => {
     console.log(chalk.blue('Logs directory:'), Logger.getLogsDir());
+  });
+
+program
+  .command('screenshot')
+  .description('Take a screenshot of the running emulator')
+  .argument('[filename]', 'Optional filename for the screenshot (default: timestamped)')
+  .action(async (filename?: string) => {
+    await takeScreenshot(filename);
+  });
+
+program
+  .command('app-permissions')
+  .description('Grant AnkiDroid database permissions to the Tauri app')
+  .action(async () => {
+    await grantAppPermissions();
   });
 
 program.parse(process.argv);
