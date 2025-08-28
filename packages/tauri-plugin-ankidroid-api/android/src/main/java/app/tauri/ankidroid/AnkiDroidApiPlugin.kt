@@ -30,10 +30,6 @@ class AnkiDroidApiPlugin(private val activity: Activity) : Plugin(activity) {
         const val AUTHORITY = "com.ichi2.anki.flashcards"
         const val NOTES_URI = "content://com.ichi2.anki.flashcards/notes"
         const val ANKIDROID_PERMISSION = "com.ichi2.anki.permission.READ_WRITE_DATABASE"
-        const val PERMISSION_REQUEST_CODE = 1001
-        
-        // Store pending permission requests
-        private var pendingPermissionInvoke: Invoke? = null
     }
 
     @Command
@@ -63,15 +59,25 @@ class AnkiDroidApiPlugin(private val activity: Activity) : Plugin(activity) {
                 }
                 invoke.resolve(result)
             } else {
-                // Store the invoke object to resolve later
-                pendingPermissionInvoke = invoke
-                
                 // Request the permission - this will open the Android permission dialog
                 ActivityCompat.requestPermissions(
                     activity,
                     arrayOf(ANKIDROID_PERMISSION),
-                    PERMISSION_REQUEST_CODE
+                    1001
                 )
+                
+                // For now, immediately check permission status after request
+                // In a real app, this would be handled by the permission result callback
+                // but since Tauri handles this differently, we'll check the status
+                val stillNeedsPermission = ContextCompat.checkSelfPermission(activity, ANKIDROID_PERMISSION) != PackageManager.PERMISSION_GRANTED
+                val result = JSObject().apply {
+                    put("granted", !stillNeedsPermission)
+                    put("permission", ANKIDROID_PERMISSION)
+                    if (stillNeedsPermission) {
+                        put("message", "Permission dialog was shown. Please grant permission and try again.")
+                    }
+                }
+                invoke.resolve(result)
             }
         } else {
             val result = JSObject().apply {
@@ -134,28 +140,6 @@ class AnkiDroidApiPlugin(private val activity: Activity) : Plugin(activity) {
                 invoke.reject(e.message ?: "Failed to get notes")
             }
         }
-    }
-    
-    // Handle the result of permission request
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray): Boolean {
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            val invoke = pendingPermissionInvoke
-            if (invoke != null) {
-                pendingPermissionInvoke = null
-                
-                val granted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                val result = JSObject().apply {
-                    put("granted", granted)
-                    put("permission", ANKIDROID_PERMISSION)
-                    if (!granted) {
-                        put("message", "Permission was denied by user")
-                    }
-                }
-                invoke.resolve(result)
-                return true
-            }
-        }
-        return false
     }
 
     private fun cursorToNote(c: Cursor): JSObject {
