@@ -14,7 +14,7 @@ export default defineConfig({
   expect: {
     timeout: 10000,
   },
-  webServer: {
-    command: "npm run android:dev",
-  },
+  // webServer: {
+  //   command: "npm run dev",
+  // },
 });

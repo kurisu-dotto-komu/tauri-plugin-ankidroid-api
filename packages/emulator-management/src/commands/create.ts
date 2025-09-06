@@ -1,26 +1,26 @@
 import path from 'path';
 import fs from 'fs-extra';
-import ora from 'ora';
 import { CONFIG, getAndroidPaths } from '../config.js';
 import { exec } from '../utils/exec.js';
 import { Logger } from '../utils/logger.js';
+import { Progress } from '../utils/progress.js';
 
 export async function createAVD(): Promise<void> {
   const logger = new Logger('emulator-create');
   const paths = getAndroidPaths();
-  const spinner = ora();
+  const progress = new Progress();
 
   try {
     logger.info('Starting AVD creation process');
 
-    spinner.start('Checking for existing AVD...');
+    progress.start('Checking for existing AVD...');
     const { stdout: avdList } = await exec(paths.avdmanager, ['list', 'avd'], {
       logger,
       silent: true,
     });
 
     if (avdList.includes(CONFIG.avd.name)) {
-      spinner.info(`AVD ${CONFIG.avd.name} already exists. Deleting and recreating...`);
+      progress.info(`AVD ${CONFIG.avd.name} already exists. Deleting and recreating...`);
       logger.info('Deleting existing AVD');
 
       await exec(paths.avdmanager, ['delete', 'avd', '-n', CONFIG.avd.name], {
@@ -28,10 +28,10 @@ export async function createAVD(): Promise<void> {
         silent: true,
       });
     } else {
-      spinner.succeed('No existing AVD found');
+      progress.succeed('No existing AVD found');
     }
 
-    spinner.start('Installing system image...');
+    progress.start('Installing system image...');
     logger.info(`Installing system image: ${CONFIG.avd.systemImage}`);
 
     const { exitCode: sdkExitCode } = await exec(paths.sdkmanager, [CONFIG.avd.systemImage], {
@@ -45,9 +45,9 @@ export async function createAVD(): Promise<void> {
     if (sdkExitCode !== 0) {
       throw new Error('Failed to install system image');
     }
-    spinner.succeed('System image installed');
+    progress.succeed('System image installed');
 
-    spinner.start(`Creating AVD: ${CONFIG.avd.name} (Pixel 7)...`);
+    progress.start(`Creating AVD: ${CONFIG.avd.name} (Pixel 7)...`);
     logger.info('Creating new AVD');
 
     const { exitCode: createExitCode } = await exec(
@@ -73,9 +73,9 @@ export async function createAVD(): Promise<void> {
       throw new Error('Failed to create AVD');
     }
 
-    spinner.succeed('AVD created successfully');
+    progress.succeed('AVD created successfully');
 
-    spinner.start('Configuring AVD for optimal performance...');
+    progress.start('Configuring AVD for optimal performance...');
     const avdConfigDir = path.join(CONFIG.paths.avdHome, `${CONFIG.avd.name}.avd`);
     const configFile = path.join(avdConfigDir, 'config.ini');
 
@@ -92,20 +92,20 @@ showDeviceFrame=no
 `;
 
       await fs.appendFile(configFile, configAdditions);
-      spinner.succeed('AVD configured for optimal performance');
+      progress.succeed('AVD configured for optimal performance');
     } else {
-      spinner.warn('Could not find AVD config file, using defaults');
+      progress.warn('Could not find AVD config file, using defaults');
       logger.warn(`Config file not found: ${configFile}`);
     }
 
-    console.log(`\n✅ AVD ${CONFIG.avd.name} created successfully!`);
-    console.log(`📝 Log file: ${logger.getLogFile()}`);
-    console.log(`\nRun 'emu start' to launch the emulator`);
+    progress.log(`✅ AVD ${CONFIG.avd.name} created successfully!`);
+    progress.log(`📝 Log file: ${logger.getLogFile()}`, 'verbose');
+    progress.log(`Run 'emu start' to launch the emulator`, 'verbose');
   } catch (error) {
-    spinner.fail('Failed to create AVD');
+    progress.fail('Failed to create AVD');
     logger.error('AVD creation failed', error);
-    console.error(`\n❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    console.error(`📝 Check log file for details: ${logger.getLogFile()}`);
+    progress.error(`\n❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    progress.error(`📝 Check log file for details: ${logger.getLogFile()}`, 'verbose');
     process.exit(1);
   }
 }

@@ -2,13 +2,13 @@ import type { Subprocess } from 'execa';
 import ora from 'ora';
 import { CONFIG, getAndroidPaths } from '../config.js';
 import { spawn, exec, waitForCondition } from '../utils/exec.js';
-import { Logger } from '../utils/logger.js';
+import { Logger, getLogLevel } from '../utils/logger.js';
 import { SignalHandler, formatTime } from '../utils/signal.js';
 
 export async function startEmulator(): Promise<void> {
   const logger = new Logger('emulator-start');
   const paths = getAndroidPaths();
-  const spinner = ora();
+  const spinner = getLogLevel() === 'verbose' ? ora() : null;
   let emulatorProcess: Subprocess | null = null;
   const signalHandler = new SignalHandler();
 
@@ -20,35 +20,37 @@ export async function startEmulator(): Promise<void> {
   try {
     logger.info('Starting emulator launch process');
 
-    spinner.start('Checking if emulator is already running...');
+    if (spinner) spinner.start('Checking if emulator is already running...');
     const { stdout: psOutput } = await exec('pgrep', ['-f', `emulator.*${CONFIG.avd.name}`], {
       logger,
       silent: true,
     });
 
     if (psOutput) {
-      spinner.info('Emulator is already running');
-      console.log(
-        `Connect via VNC on display ${CONFIG.emulator.display} (port ${CONFIG.emulator.vncPort})`
-      );
+      if (spinner) spinner.info('Emulator is already running');
+      if (getLogLevel() !== 'silent') {
+        console.log(
+          `🖥️  Emulator already running. Connect via VNC on display ${CONFIG.emulator.display} (port ${CONFIG.emulator.vncPort})`
+        );
+      }
       return;
     }
-    spinner.succeed('No running emulator found');
+    if (spinner) spinner.succeed('No running emulator found');
 
-    spinner.start('Checking if AVD exists...');
+    if (spinner) spinner.start('Checking if AVD exists...');
     const { stdout: avdList } = await exec(paths.avdmanager, ['list', 'avd'], {
       logger,
       silent: true,
     });
 
     if (!avdList.includes(CONFIG.avd.name)) {
-      spinner.fail(`AVD ${CONFIG.avd.name} not found`);
+      if (spinner) spinner.fail(`AVD ${CONFIG.avd.name} not found`);
       console.error(`\nRun 'emu init' first`);
       process.exit(1);
     }
-    spinner.succeed('AVD found');
+    if (spinner) spinner.succeed('AVD found');
 
-    spinner.start(`Starting Android emulator on display ${CONFIG.emulator.display} (VNC)...`);
+    if (spinner) spinner.start(`Starting Android emulator on display ${CONFIG.emulator.display} (VNC)...`);
     logger.info('Launching emulator process');
 
     const emulatorLogStream = logger.createProcessLogger('emulator-output');
@@ -86,12 +88,12 @@ export async function startEmulator(): Promise<void> {
 
     const pid = emulatorProcess.pid;
     logger.info(`Emulator started with PID: ${pid}`);
-    spinner.succeed(`Emulator process started (PID: ${pid})`);
+    if (spinner) spinner.succeed(`Emulator process started (PID: ${pid}`);
 
     // Register emulator process for cleanup
     signalHandler.registerProcess(emulatorProcess, 'emulator');
 
-    spinner.start(`Waiting for emulator to boot (timeout: ${CONFIG.emulator.bootTimeout}s)...`);
+    if (spinner) spinner.start(`Waiting for emulator to boot (timeout: ${CONFIG.emulator.bootTimeout}s)...`);
     logger.info('Waiting for device to appear in ADB');
 
     const deviceReady = await waitForCondition(
@@ -106,23 +108,23 @@ export async function startEmulator(): Promise<void> {
       CONFIG.emulator.bootCheckInterval * 1000,
       logger,
       (remainingSeconds) => {
-        spinner.text = `Waiting for emulator to boot (${formatTime(remainingSeconds)} remaining)...`;
+        if (spinner) spinner.text = `Waiting for emulator to boot (${formatTime(remainingSeconds)} remaining)...`;
       }
     );
 
     if (!deviceReady) {
-      spinner.fail('Emulator failed to start within timeout');
+      if (spinner) spinner.fail('Emulator failed to start within timeout');
       logger.error('Emulator boot timeout');
 
       if (emulatorProcess) {
         emulatorProcess.kill();
       }
 
-      console.error(`\n📝 Check log file for details: ${logger.getLogFile()}`);
+      if (getLogLevel() === 'verbose') console.error(`\n📝 Check log file for details: ${logger.getLogFile()}`);
       process.exit(1);
     }
 
-    spinner.text = 'Device detected, checking boot status...';
+    if (spinner) spinner.text = 'Device detected, checking boot status...';
     logger.info('Device detected in ADB, checking boot completion');
 
     const bootComplete = await waitForCondition(
@@ -138,46 +140,52 @@ export async function startEmulator(): Promise<void> {
       2000,
       logger,
       (remainingSeconds) => {
-        spinner.text = `Checking boot completion (${formatTime(remainingSeconds)} remaining)...`;
+        if (spinner) spinner.text = `Checking boot completion (${formatTime(remainingSeconds)} remaining)...`;
       }
     );
 
     if (!bootComplete) {
-      spinner.warn('Boot not fully completed, but device is responsive');
+      if (spinner) spinner.warn('Boot not fully completed, but device is responsive');
       logger.warn('Boot completion check timed out');
     } else {
-      spinner.succeed('Emulator booted successfully!');
+      if (spinner) spinner.succeed('Emulator booted successfully!');
       logger.info('Boot completed successfully');
 
       // Configure 3-button navigation
-      spinner.start('Setting 3-button navigation mode...');
+      if (spinner) spinner.start('Setting 3-button navigation mode...');
       await exec(
         paths.adb,
         ['shell', 'cmd', 'overlay', 'enable', 'com.android.internal.systemui.navbar.threebutton'],
         { logger, silent: true }
       );
-      spinner.succeed('Navigation mode configured');
+      if (spinner) spinner.succeed('Navigation mode configured');
     }
 
     logger.closeProcessLogger();
 
-    console.log(`\n✅ Emulator started successfully!`);
-    console.log(
-      `🖥️  Connect via VNC to view the emulator (display ${CONFIG.emulator.display}, port ${CONFIG.emulator.vncPort})`
-    );
-    console.log(`📝 Log file: ${logger.getLogFile()}`);
+    if (getLogLevel() !== 'silent') {
+      console.log(`✅ Emulator started successfully!`);
+      console.log(
+        `🖥️  Connect via VNC to view the emulator (display ${CONFIG.emulator.display}, port ${CONFIG.emulator.vncPort})`
+      );
+      if (getLogLevel() === 'verbose') {
+        console.log(`📝 Log file: ${logger.getLogFile()}`);
+      }
+    }
 
     if (emulatorProcess) {
       emulatorProcess.unref();
-      console.log('🏃 Running in background...');
-      console.log('   Run "emu stop" to shut down the emulator');
+      if (getLogLevel() === 'verbose') {
+        console.log('🏋 Running in background...');
+        console.log('   Run "emu stop" to shut down the emulator');
+      }
 
       // Clean exit - detach from emulator process
       signalHandler.detachAll();
       process.exit(0);
     }
   } catch (error) {
-    spinner.fail('Failed to start emulator');
+    if (spinner) spinner.fail('Failed to start emulator');
     logger.error('Emulator start failed', error);
     logger.closeProcessLogger();
 
@@ -186,7 +194,7 @@ export async function startEmulator(): Promise<void> {
     }
 
     console.error(`\n❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    console.error(`📝 Check log file for details: ${logger.getLogFile()}`);
+    if (getLogLevel() === 'verbose') console.error(`📝 Check log file for details: ${logger.getLogFile()}`);
     process.exit(1);
   }
 }
@@ -194,11 +202,11 @@ export async function startEmulator(): Promise<void> {
 export async function stopEmulator(): Promise<void> {
   const logger = new Logger('emulator-stop');
   const paths = getAndroidPaths();
-  const spinner = ora();
+  const spinner = getLogLevel() === 'verbose' ? ora() : null;
 
   try {
     logger.info('Stopping emulator');
-    spinner.start('Stopping emulator...');
+    if (spinner) spinner.start('Stopping emulator...');
 
     await exec(paths.adb, ['emu', 'kill'], { logger, silent: true });
 
@@ -207,13 +215,18 @@ export async function stopEmulator(): Promise<void> {
       silent: true,
     });
 
-    spinner.succeed('Emulator stopped');
+    if (spinner) spinner.succeed('Emulator stopped');
     logger.info('Emulator stopped successfully');
-    console.log(`📝 Log file: ${logger.getLogFile()}`);
+    if (getLogLevel() !== 'silent') {
+      console.log(`✅ Emulator stopped successfully`);
+      if (getLogLevel() === 'verbose') {
+        console.log(`📝 Log file: ${logger.getLogFile()}`);
+      }
+    }
   } catch (error) {
-    spinner.fail('Failed to stop emulator');
+    if (spinner) spinner.fail('Failed to stop emulator');
     logger.error('Failed to stop emulator', error);
     console.error(`\n⚠️  Emulator may not have been running`);
-    console.error(`📝 Check log file for details: ${logger.getLogFile()}`);
+    if (getLogLevel() === 'verbose') console.error(`📝 Check log file for details: ${logger.getLogFile()}`);
   }
 }

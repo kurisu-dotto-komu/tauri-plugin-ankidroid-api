@@ -1,6 +1,6 @@
 import { getAndroidPaths } from '../config.js';
 import { exec } from '../utils/exec.js';
-import { Logger } from '../utils/logger.js';
+import { Logger, getLogLevel } from '../utils/logger.js';
 
 export async function grantAppPermissions(): Promise<void> {
   const logger = new Logger('app-permissions');
@@ -29,11 +29,11 @@ export async function grantAppPermissions(): Promise<void> {
     });
 
     logger.info('Permission granted successfully');
-    console.log(`Granted ${ankiPermission} to ${tauriAppPackage}`);
+    if (getLogLevel() !== 'silent') console.log(`✅ Granted ${ankiPermission} to ${tauriAppPackage}`);
   } catch (error) {
     logger.error('Failed to grant permissions', error);
     console.error(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    console.error(`Check log file for details: ${logger.getLogFile()}`);
+    if (getLogLevel() === 'verbose') console.error(`Check log file for details: ${logger.getLogFile()}`);
     process.exit(1);
   }
 }

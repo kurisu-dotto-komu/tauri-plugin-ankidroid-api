@@ -1,0 +1,2 @@
+- Use `clsx` to combine classes rather than string interpolation.
+- Use tailwind classes

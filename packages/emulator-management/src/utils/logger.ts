@@ -13,6 +13,31 @@ const LOGS_DIR = path.join(PROJECT_ROOT, 'logs');
 
 fs.ensureDirSync(LOGS_DIR);
 
+export type LogLevel = 'silent' | 'normal' | 'verbose';
+
+let logLevel: LogLevel = 'normal';
+
+export function setLogLevel(level: LogLevel) {
+  logLevel = level;
+}
+
+export function getLogLevel(): LogLevel {
+  return logLevel;
+}
+
+// Legacy functions for backwards compatibility
+export function getVerbose(): boolean {
+  return logLevel === 'verbose';
+}
+
+export function isSilent(): boolean {
+  return logLevel === 'silent';
+}
+
+export function isNormal(): boolean {
+  return logLevel === 'normal';
+}
+
 export class Logger {
   private winston: winston.Logger;
   private logFile: string;
@@ -34,12 +59,12 @@ export class Logger {
       ),
       transports: [
         new transports.File({ filename: this.logFile }),
-        new transports.Console({
+        ...(logLevel === 'verbose' ? [new transports.Console({
           format: format.combine(
             format.colorize(),
             format.printf(({ _level, message }) => `${String(message)}`)
           ),
-        }),
+        })] : []),
       ],
     });
   }
@@ -49,6 +74,10 @@ export class Logger {
   }
 
   error(message: string, meta?: unknown) {
+    // Always log errors to console unless in silent mode
+    if (logLevel !== 'verbose' && logLevel !== 'silent') {
+      console.error(message);
+    }
     this.winston.error(message, meta);
   }
 
@@ -64,7 +93,9 @@ export class Logger {
     // Use the same unified log file for all process output
     this.processLogStream = createWriteStream(this.logFile, { flags: 'a' });
 
-    this.info(`Process '${processName}' output will be logged to: ${this.logFile}`);
+    if (logLevel === 'verbose') {
+      this.info(`Process '${processName}' output will be logged to: ${this.logFile}`);
+    }
     return this.processLogStream;
   }
 

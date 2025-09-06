@@ -2,7 +2,7 @@ import { existsSync, mkdirSync } from 'fs';
 import path from 'path';
 import { getAndroidPaths } from '../config.js';
 import { exec } from '../utils/exec.js';
-import { Logger } from '../utils/logger.js';
+import { Logger, getLogLevel } from '../utils/logger.js';
 
 export async function takeScreenshot(filename?: string): Promise<void> {
   const logger = new Logger('emulator-screenshot');
@@ -48,11 +48,12 @@ export async function takeScreenshot(filename?: string): Promise<void> {
     });
 
     logger.info(`Screenshot saved to ${outputPath}`);
-    console.log(outputPath);
+    // Always output the path unless silent
+    if (getLogLevel() !== 'silent') console.log(outputPath);
   } catch (error) {
     logger.error('Screenshot failed', error);
     console.error(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    console.error(`Check log file for details: ${logger.getLogFile()}`);
+    if (getLogLevel() === 'verbose') console.error(`Check log file for details: ${logger.getLogFile()}`);
     process.exit(1);
   }
 }

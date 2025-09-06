@@ -13,6 +13,7 @@
 - Either run `npm run dev` or `npm run test`, but not both at the same time; `dev` is started automatically in test.
 - You do not need to rebuild in development, just use `npm run test` and the dev server will handle builds for you.
 - We are usually running a Chrome DevTools server on 9222, which you can query.
+- Use `emu [start|stop|screenshot]` to control the emulator.
 - Use `emu screenshot` liberally to help debug problems with the frontend and iterate.
 - Use `npm run quickfix` frequently to fix linting and formatting errors.
 
@@ -24,6 +25,26 @@
 - **Error messages showing "[object Object]"**: This usually means error objects aren't being serialized properly. Add better error handling in the JS client to use `JSON.stringify(error)` for objects.
 - **"Expected array, received string" validation errors**: Ensure Kotlin code converts split strings to proper JSArray objects using `JSArray().put(item)` instead of raw Kotlin collections.
 - **Test page closing unexpectedly**: Usually caused by unhandled errors in the frontend. Add debugging to see the actual error instead of letting it crash the webview.
+
+## Project Structure
+
+This is a Tauri-based Android app that provides an API interface to AnkiDroid. The project is organized as a monorepo with the following key packages:
+
+- **`packages/tauri-app/`** - Main Tauri application
+  - React frontend in `src/`
+  - Rust/Android backend in `src-tauri/`
+  - End-to-end tests in `tests/e2e/`
+- **`packages/tauri-plugin-ankidroid-api/`** - Core Tauri plugin for AnkiDroid integration
+  - Rust plugin code in `src/`
+  - Kotlin implementation in `android/src/main/java/app/tauri/ankidroid/AnkiDroidApiPlugin.kt`
+- **`packages/ankidroid-api-client/`** - TypeScript client library for the API
+  - Built client distributed in `dist/`
+  - Source in `src/`
+- **`packages/emulator-management/`** - CLI tools for managing Android emulator
+  - Linked as `emu` command; `start`, `stop`, etc.
+  - Commands in `src/commands/`
+
+The plugin architecture uses Kotlin `@Command` decorators in `AnkiDroidApiPlugin.kt` for the core functionality, not Rust.
 
 ## Project Notes
 

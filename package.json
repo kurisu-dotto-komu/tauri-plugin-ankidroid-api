@@ -7,9 +7,13 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run android:dev --workspace=tauri-app",
+    "dev": "npm run dev --workspace=tauri-app",
+    "dev:ui": "npm run dev:ui --workspace=tauri-app",
+    "dev:ui:kill": "npm run dev:ui:kill --workspace=tauri-app",
+    "dev:android": "npm run dev:android --workspace=tauri-app",
     "test": "npm run test --workspace=tauri-app",
     "build": "npm run android:build --workspace=tauri-app",
+    "tauri:clean": "npm run tauri:clean --workspace=tauri-app",
     "link-emu": "cd packages/emulator-management && npm link --force && cd ../.. && npm link emulator-management",
     "inspector": "PID=$(adb shell pidof com.demo.tauri_app) && adb forward tcp:9222 localabstract:webview_devtools_remote_$PID",
     "quickfix": "npm run quickfix --workspaces"

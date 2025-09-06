@@ -303,6 +303,36 @@ WHERE c.queue IN (1, 3) AND c.due <= ?
 ORDER BY c.due ASC
 ```
 
+### Find Notes with Images
+```sql
+SELECT id, flds, tags, sfld 
+FROM notes 
+WHERE flds LIKE '%<img%src=%'
+```
+
+### Find Notes with Audio
+```sql
+SELECT id, flds, tags, sfld 
+FROM notes 
+WHERE flds LIKE '%[sound:%'
+```
+
+### Get Cards with Media Content
+```sql
+SELECT c.id, c.nid, c.ord, n.flds 
+FROM cards c 
+JOIN notes n ON c.nid = n.id 
+WHERE n.flds LIKE '%<img%' OR n.flds LIKE '%[sound:%'
+ORDER BY n.mod DESC
+```
+
+### Find Specific Media File Usage
+```sql
+SELECT id, flds, tags 
+FROM notes 
+WHERE flds LIKE '%filename.jpg%'
+```
+
 ## Data Types and Validation
 
 ### Timestamps
@@ -367,6 +397,97 @@ val cursor = contentResolver.query(uri, projection, null, null, null)
 - Content provider API maintains backward compatibility
 - Always check AnkiDroid version when using advanced features
 - Test with multiple AnkiDroid versions in production
+
+## Media Schema
+
+AnkiDroid handles media files (images, audio, videos) separately from the main database, using a combination of file system storage and database references.
+
+### Media File Storage
+
+Media files are stored in the device's file system in a dedicated collection media folder:
+- **Location**: `AnkiDroid/collection.media/` directory
+- **File Types**: Images (PNG, JPG, SVG), Audio (MP3, WAV, OGG), Video (MP4, WEBM)
+- **Organization**: Files are stored with their original filenames or generated names
+
+### Media References in Database
+
+Media files are referenced within card and note content through HTML tags embedded in the field data:
+
+#### Image References
+```html
+<img src="filename.jpg">
+<img src="generated_image_123.png">
+```
+
+#### Audio References
+```html
+[sound:audio_file.mp3]
+[sound:recording_20231201.wav]
+```
+
+### Media Database File
+
+AnkiDroid maintains a separate SQLite database for media metadata:
+- **File**: `collection.media.db2`
+- **Purpose**: Tracks media file usage, checksums, and synchronization state
+
+### Media Metadata Structure
+
+Media information is stored in JSON format within the collection database:
+
+#### Legacy Format (Anki 2.0)
+```json
+{
+  "130": "raid.png",
+  "131": "audio_clip.mp3",
+  "132": "diagram.svg"
+}
+```
+
+#### Modern Format (Anki 2.1.50+)
+Media information uses Protocol Buffers (Protobuf) MediaEntries format for more efficient storage and synchronization.
+
+### Media in Content Provider API
+
+The AnkiDroid Content Provider has limited media access due to Android permission restrictions:
+
+#### Current Limitations
+- Direct media file access requires additional permissions
+- Media files cannot be retrieved directly through the content provider
+- Third-party apps must request media access separately
+
+#### Workaround Approaches
+- Reference media filenames in field content
+- Use AnkiDroid's built-in media handling for display
+- Implement custom media management for third-party apps
+
+### Media Processing
+
+#### Adding Media
+```kotlin
+// Media files are referenced in note fields
+val noteField = "<img src=\"my_image.jpg\"> Question text [sound:audio.mp3]"
+```
+
+#### Media Detection
+```kotlin
+// Extract media references from field content
+val imagePattern = Regex("<img[^>]+src=\"([^\"]+)\"")
+val audioPattern = Regex("\\[sound:([^\\]]+)\\]")
+```
+
+### Media Synchronization
+
+When using AnkiWeb sync:
+- **Option**: "Synchronize audio and images too" must be enabled
+- **Process**: Media files are uploaded/downloaded separately from database sync
+- **Validation**: Use "Check media" function to update database after manual file transfers
+
+### Performance Considerations
+
+- **Large Collections**: Media sync can be time-consuming for collections with many files
+- **File Management**: Regular media cleanup prevents orphaned files
+- **Storage**: Consider device storage limitations when adding media-heavy content
 
 ## References
 

@@ -32,12 +32,12 @@
     }
   },
   "forwardPorts": [
-    5173,
+    1420,
     6080,
     9222
   ],
   "portsAttributes": {
-    "5173": {
+    "1420": {
       "label": "Vite Dev Server",
       "onAutoForward": "notify"
     },

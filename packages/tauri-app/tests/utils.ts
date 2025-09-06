@@ -6,10 +6,14 @@ export async function getDevice() {
   return device;
 }
 
+export async function wait(timeout: number = 1000) {
+  await new Promise((resolve) => setTimeout(resolve, timeout));
+}
+
 export async function restartApp(device: any) {
-  console.log("Restarting app...");
   await device.shell("am force-stop com.demo.tauri_app");
   await device.shell("am start -n com.demo.tauri_app/.MainActivity");
+  await wait();
 }
 
 export async function getAppPage(device: any) {
