@@ -25,7 +25,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
-    "tailwindcss": "^4.1.13"
+    "tailwindcss": "^4.1.13",
+    "tauri-plugin-m3": "^0.2.2"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

@@ -3,15 +3,13 @@ import { useAnkiContext } from "../contexts/AnkiContext";
 
 // Components
 import NoteManagerWrapper from "../components/wrappers/NoteManagerWrapper";
-import DeckManagerWrapper from "../components/wrappers/DeckManagerWrapper";
 import ModelManagerWrapper from "../components/wrappers/ModelManagerWrapper";
-import CardManagerWrapper from "../components/wrappers/CardManagerWrapper";
-import MediaManagerWrapper from "../components/wrappers/MediaManagerWrapper";
 import AnkiConnectionWizard from "../components/AnkiConnectionWizard";
-import ApiTestTab from "../components/ApiTestTab";
+import TodoPlaceholder from "../components/TodoPlaceholder";
 import GreetTab from "../components/GreetTab";
 import AppLayout from "../layouts/AppLayout";
 import { APP_TABS } from "../config/tabs";
+import { ErrorToast } from "../components/ErrorToast";
 
 interface AppRouterProps {
   activeTab: TabType;
@@ -46,16 +44,16 @@ export default function AppRouter({
       return <ModelManagerWrapper />;
 
     case "decks":
-      return <DeckManagerWrapper />;
+      return <TodoPlaceholder title="Decks" />;
 
     case "cards":
-      return <CardManagerWrapper />;
+      return <TodoPlaceholder title="Cards" />;
 
     case "media":
-      return <MediaManagerWrapper />;
+      return <TodoPlaceholder title="Media" />;
 
     case "api-test":
-      return <ApiTestTab />;
+      return <TodoPlaceholder title="API Test" />;
 
     default:
       return <div>Unknown tab</div>;
@@ -63,12 +61,15 @@ export default function AppRouter({
   };
 
   return (
-    <AppLayout
-      tabs={APP_TABS}
-      activeTab={activeTab}
-      onTabChange={onTabChange}
-    >
-      {renderContent()}
-    </AppLayout>
+    <>
+      <ErrorToast />
+      <AppLayout
+        tabs={APP_TABS}
+        activeTab={activeTab}
+        onTabChange={onTabChange}
+      >
+        {renderContent()}
+      </AppLayout>
+    </>
   );
 }

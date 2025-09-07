@@ -3260,6 +3260,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin-ankidroid-api",
+ "tauri-plugin-m3",
 ]
 
 [[package]]
@@ -3351,6 +3352,18 @@ dependencies = [
  "tauri",
  "tauri-plugin",
  "thiserror 1.0.69",
+]
+
+[[package]]
+name = "tauri-plugin-m3"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eeac0af6bfde596e60db4d1a6757817a84d497982d441f450a83e3de1e08d542"
+dependencies = [
+ "serde",
+ "tauri",
+ "tauri-plugin",
+ "thiserror 2.0.16",
 ]
 
 [[package]]

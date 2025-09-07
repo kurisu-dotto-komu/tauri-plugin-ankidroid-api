@@ -14,17 +14,18 @@ import {
   type DeleteNoteRequest,
 } from "ankidroid-api-client";
 import { LuCircleX, LuFileText, LuCircleCheck } from "react-icons/lu";
+import { useErrorNotification } from "../contexts/ErrorNotificationContext";
 
 interface NoteManagerProps {
   available: boolean;
 }
 
 export const NoteManager: React.FC<NoteManagerProps> = ({ available }) => {
+  const { addError } = useErrorNotification();
   const [notes, setNotes] = useState<Note[]>([]);
   const [models, setModels] = useState<Model[]>([]);
   const [decks, setDecks] = useState<Deck[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   
@@ -55,9 +56,8 @@ export const NoteManager: React.FC<NoteManagerProps> = ({ available }) => {
       setLoading(true);
       const fetchedNotes = await getNotes({ limit: 50 });
       setNotes(fetchedNotes);
-      setError("");
     } catch (error) {
-      setError(`Error fetching notes: ${error}`);
+      addError(`Error fetching notes: ${error}`);
     } finally {
       setLoading(false);
     }
@@ -80,7 +80,8 @@ export const NoteManager: React.FC<NoteManagerProps> = ({ available }) => {
       }
     } catch (error) {
       console.error("Error fetching models:", error);
-      setError(`Error fetching models: ${JSON.stringify(error)}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      addError(`Failed to fetch models: ${errorMessage}`);
     }
   };
   
@@ -106,18 +107,18 @@ export const NoteManager: React.FC<NoteManagerProps> = ({ available }) => {
       setDecks(fetchedDecks);
     } catch (error) {
       console.error("Error fetching decks:", error);
+      addError(`Error fetching decks: ${error}`);
     }
   };
 
   const handleCreateNote = async () => {
     if (!formState.modelId || formState.fields.some(f => !f.trim())) {
-      setError("Please select a model and fill in all fields");
+      addError("Please select a model and fill in all fields");
       return;
     }
 
     try {
       setLoading(true);
-      setError("");
 
       const request: CreateNoteRequest = {
         modelId: formState.modelId,
@@ -141,16 +142,15 @@ export const NoteManager: React.FC<NoteManagerProps> = ({ available }) => {
         });
         setTagInput("");
         setSuccess("Note created successfully!");
-        setError("");
         
         // Clear success message after 3 seconds
         setTimeout(() => setSuccess(""), 3000);
       } else {
-        setError(result.error || "Failed to create note");
+        addError(result.error || "Failed to create note");
         setSuccess("");
       }
     } catch (error) {
-      setError(`Error creating note: ${error}`);
+      addError(`Error creating note: ${error}`);
     } finally {
       setLoading(false);
     }
@@ -161,7 +161,6 @@ export const NoteManager: React.FC<NoteManagerProps> = ({ available }) => {
 
     try {
       setLoading(true);
-      setError("");
 
       const request: UpdateNoteRequest = {
         noteId: editingNote.id,
@@ -185,10 +184,10 @@ export const NoteManager: React.FC<NoteManagerProps> = ({ available }) => {
         });
         setTagInput("");
       } else {
-        setError(result.error || "Failed to update note");
+        addError(result.error || "Failed to update note");
       }
     } catch (error) {
-      setError(`Error updating note: ${error}`);
+      addError(`Error updating note: ${error}`);
     } finally {
       setLoading(false);
     }
@@ -199,7 +198,6 @@ export const NoteManager: React.FC<NoteManagerProps> = ({ available }) => {
 
     try {
       setLoading(true);
-      setError("");
 
       const request: DeleteNoteRequest = { noteId };
       const result = await deleteNote(request);
@@ -207,10 +205,10 @@ export const NoteManager: React.FC<NoteManagerProps> = ({ available }) => {
       if (result.success) {
         await fetchNotes(); // Refresh notes list
       } else {
-        setError(result.error || "Failed to delete note");
+        addError(result.error || "Failed to delete note");
       }
     } catch (error) {
-      setError(`Error deleting note: ${error}`);
+      addError(`Error deleting note: ${error}`);
     } finally {
       setLoading(false);
     }
@@ -487,18 +485,6 @@ export const NoteManager: React.FC<NoteManagerProps> = ({ available }) => {
               <LuCircleCheck className="w-5 h-5 text-green-600" />
             </div>
             <p className="text-sm text-green-800">{success}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Error Display */}
-      {error && (
-        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-              <LuCircleX className="w-5 h-5 text-red-600" />
-            </div>
-            <p className="text-sm text-red-800">{error}</p>
           </div>
         </div>
       )}
