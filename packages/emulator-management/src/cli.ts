@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
 import { program } from 'commander';
-import { ankiInstall, ankiPermissions, ankiUninstall } from './commands/anki.js';
+import { ankiInstall, ankiPermissions, ankiReset, ankiUninstall } from './commands/anki.js';
 import { grantAppPermissions } from './commands/app-permissions.js';
 import { createAVD } from './commands/create.js';
 import { initializeEmulator } from './commands/init.js';
@@ -128,6 +128,16 @@ ankiCommand
     setLogLevel(opts.silent ? 'silent' : opts.verbose ? 'verbose' : 'normal');
     if (!opts.silent) console.log(chalk.blue('Granting AnkiDroid API permissions to Tauri app...'));
     await ankiPermissions();
+  });
+
+ankiCommand
+  .command('reset')
+  .description('Complete AnkiDroid reset: uninstall, clear all data, reinstall, and configure all permissions')
+  .action(async () => {
+    const opts = program.opts();
+    setLogLevel(opts.silent ? 'silent' : opts.verbose ? 'verbose' : 'normal');
+    if (!opts.silent) console.log(chalk.blue('Performing complete AnkiDroid reset (including data clearing)...'));
+    await ankiReset();
   });
 
 program.parse(process.argv);

@@ -300,3 +300,109 @@ export async function ankiPermissions(): Promise<void> {
     process.exit(1);
   }
 }
+
+export async function ankiReset(): Promise<void> {
+  const logger = new Logger('anki-reset');
+  const paths = getAndroidPaths();
+  const progress = new Progress();
+
+  try {
+    logger.info('Starting complete AnkiDroid reset (uninstall, clear data, reinstall, permissions)');
+
+    progress.log('\n🔄 Starting complete AnkiDroid reset...');
+    progress.log('This will uninstall, clear all data, reinstall, and configure AnkiDroid with all permissions\n');
+
+    // Check if emulator is running first
+    progress.start('Checking if emulator is running...');
+    const { stdout: devices } = await exec(paths.adb, ['devices'], {
+      logger,
+      silent: true,
+    });
+
+    if (!devices.includes('emulator') || !devices.includes('device')) {
+      progress.fail('No emulator found');
+      console.error(`\nPlease start the emulator first with 'emu start'`);
+      process.exit(1);
+    }
+    progress.succeed('Emulator is running');
+
+    // Step 1: Uninstall existing AnkiDroid
+    progress.log('\nStep 1: Uninstalling existing AnkiDroid');
+    try {
+      await ankiUninstall();
+    } catch (error) {
+      // Continue if uninstall fails (might not be installed)
+      logger.warn('Uninstall failed, continuing with fresh install', error);
+    }
+
+    // Step 2: Clear AnkiDroid data directories
+    progress.log('\nStep 2: Clearing AnkiDroid data directories');
+    
+    progress.start('Clearing AnkiDroid user data directory...');
+    logger.info('Removing /sdcard/AnkiDroid directory');
+    try {
+      await exec(paths.adb, ['shell', 'rm', '-rf', '/sdcard/AnkiDroid'], { 
+        logger, 
+        silent: true 
+      });
+      progress.succeed('User data directory cleared');
+    } catch (error) {
+      progress.info('User data directory was already clean or not accessible');
+      logger.warn('Failed to clear user data directory', error);
+    }
+
+    progress.start('Clearing AnkiDroid app data directory...');
+    logger.info('Removing /data/data/com.ichi2.anki directory');
+    try {
+      await exec(paths.adb, ['shell', 'run-as', CONFIG.ankidroid.packageName, 'rm', '-rf', '.'], { 
+        logger, 
+        silent: true 
+      });
+      progress.succeed('App data directory cleared');
+    } catch (error) {
+      progress.info('App data directory was already clean or not accessible');
+      logger.warn('Failed to clear app data directory', error);
+    }
+
+    // Also clear any leftover files in common AnkiDroid locations
+    progress.start('Clearing additional AnkiDroid data locations...');
+    const dataLocations = [
+      '/sdcard/Android/data/com.ichi2.anki',
+      '/storage/emulated/0/AnkiDroid',
+      '/storage/emulated/0/Android/data/com.ichi2.anki'
+    ];
+
+    for (const location of dataLocations) {
+      try {
+        await exec(paths.adb, ['shell', 'rm', '-rf', location], { 
+          logger, 
+          silent: true 
+        });
+      } catch (error) {
+        // Ignore errors for these additional locations
+        logger.debug(`Could not clear ${location}`, error);
+      }
+    }
+    progress.succeed('Additional data locations cleared');
+
+    // Step 3: Install AnkiDroid with permissions
+    progress.log('\nStep 3: Installing AnkiDroid with permissions');
+    await ankiInstall();
+
+    // Step 4: Grant API permissions to Tauri app
+    progress.log('\nStep 4: Granting API permissions to Tauri app');
+    await ankiPermissions();
+
+    progress.log(`\n✅ AnkiDroid reset completed successfully!`);
+    progress.log(`   • AnkiDroid has been uninstalled and all data cleared`);
+    progress.log(`   • Fresh installation completed with all permissions`);
+    progress.log(`   • API access has been configured for the Tauri app`);
+    progress.log(`📝 Log file: ${logger.getLogFile()}`, 'verbose');
+  } catch (error) {
+    progress.fail('AnkiDroid reset failed');
+    logger.error('AnkiDroid reset failed', error);
+    progress.error(`\n❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    progress.error(`📝 Check log file for details: ${logger.getLogFile()}`, 'verbose');
+    process.exit(1);
+  }
+}
