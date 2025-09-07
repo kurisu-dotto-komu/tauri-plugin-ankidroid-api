@@ -14,6 +14,8 @@ import {
   DeleteNoteResponseSchema,
   CreateModelRequestSchema,
   CreateModelResponseSchema,
+  DeleteModelRequestSchema,
+  DeleteModelResponseSchema,
   CreateDeckRequestSchema,
   CreateDeckResponseSchema,
   GetCardsRequestSchema,
@@ -48,6 +50,8 @@ export type DeleteNoteResponse = z.infer<typeof DeleteNoteResponseSchema>;
 
 export type CreateModelRequest = z.infer<typeof CreateModelRequestSchema>;
 export type CreateModelResponse = z.infer<typeof CreateModelResponseSchema>;
+export type DeleteModelRequest = z.infer<typeof DeleteModelRequestSchema>;
+export type DeleteModelResponse = z.infer<typeof DeleteModelResponseSchema>;
 export type CreateDeckRequest = z.infer<typeof CreateDeckRequestSchema>;
 export type CreateDeckResponse = z.infer<typeof CreateDeckResponseSchema>;
 

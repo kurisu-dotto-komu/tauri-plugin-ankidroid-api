@@ -10,7 +10,18 @@
     "ankidroid-api:allow-requestPermission",
     "ankidroid-api:allow-getNotes",
     "ankidroid-api:allow-getModels",
+    "ankidroid-api:allow-createModel",
+    "ankidroid-api:allow-deleteModel",
     "ankidroid-api:allow-getDecks",
+    "ankidroid-api:allow-createDeck",
+    "ankidroid-api:allow-createNote",
+    "ankidroid-api:allow-updateNote",
+    "ankidroid-api:allow-deleteNote",
+    "ankidroid-api:allow-getCards",
+    "ankidroid-api:allow-updateCard",
+    "ankidroid-api:allow-deleteCard",
+    "ankidroid-api:allow-getMedia",
+    "ankidroid-api:allow-getTemplates",
     "m3:default"
   ]
 }

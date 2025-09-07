@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-getDecks"
+description = "Enables the getDecks command without any pre-configured scope."
+commands.allow = ["getDecks"]
+
+[[permission]]
+identifier = "deny-getDecks"
+description = "Denies the getDecks command without any pre-configured scope."
+commands.deny = ["getDecks"]

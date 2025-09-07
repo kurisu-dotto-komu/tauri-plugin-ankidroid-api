@@ -79,7 +79,7 @@ export const ErrorToast: React.FC = () => {
                   </svg>
                   <p className="text-sm font-medium text-red-800">Error</p>
                 </div>
-                <p className="mt-1 text-sm text-red-700">{error.message}</p>
+                <p className="mt-1 text-sm text-red-700 break-words overflow-hidden" title={error.message} style={{display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' as any}}>{error.message}</p>
               </div>
               <button
                 onClick={() => removeError(error.id)}

@@ -16,11 +16,9 @@ interface AppRouterProps {
   onTabChange: (tab: TabType) => void;
 }
 
-export default function AppRouter({
-  activeTab,
-  onTabChange,
-}: AppRouterProps) {
-  const { status, isConnected, checkConnection, requestPermission } = useAnkiContext();
+export default function AppRouter({ activeTab, onTabChange }: AppRouterProps) {
+  const { status, isConnected, checkConnection, requestPermission } =
+    useAnkiContext();
 
   const renderContent = () => {
     if (!isConnected) {
@@ -34,29 +32,32 @@ export default function AppRouter({
     }
 
     switch (activeTab) {
-    case "greet":
-      return <GreetTab />;
+      case "greet":
+        return <GreetTab />;
 
-    case "notes":
-      return <NoteManagerWrapper />;
+      case "notes":
+        return <NoteManagerWrapper />;
 
-    case "models":
-      return <ModelManagerWrapper />;
+      case "models":
+        return <ModelManagerWrapper />;
 
-    case "decks":
-      return <TodoPlaceholder title="Decks" />;
+      case "decks":
+        return <TodoPlaceholder title="Decks" />;
 
-    case "cards":
-      return <TodoPlaceholder title="Cards" />;
+      case "cards":
+        return <TodoPlaceholder title="Cards" />;
 
-    case "media":
-      return <TodoPlaceholder title="Media" />;
+      case "templates":
+        return <TodoPlaceholder title="Templates" />;
 
-    case "api-test":
-      return <TodoPlaceholder title="API Test" />;
+      case "media":
+        return <TodoPlaceholder title="Media" />;
 
-    default:
-      return <div>Unknown tab</div>;
+      case "api-test":
+        return <TodoPlaceholder title="API Test" />;
+
+      default:
+        return <div>Unknown tab</div>;
     }
   };
 

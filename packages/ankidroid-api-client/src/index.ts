@@ -12,6 +12,8 @@ import {
   DeleteNoteResponseSchema,
   CreateModelRequestSchema,
   CreateModelResponseSchema,
+  DeleteModelRequestSchema,
+  DeleteModelResponseSchema,
   CreateDeckRequestSchema,
   CreateDeckResponseSchema,
   GetCardsRequestSchema,
@@ -44,6 +46,8 @@ import type {
   DeleteNoteResponse,
   CreateModelRequest,
   CreateModelResponse,
+  DeleteModelRequest,
+  DeleteModelResponse,
   CreateDeckRequest,
   CreateDeckResponse,
   GetCardsOptions,
@@ -77,6 +81,8 @@ export type {
   DeleteNoteResponse,
   CreateModelRequest,
   CreateModelResponse,
+  DeleteModelRequest,
+  DeleteModelResponse,
   CreateDeckRequest,
   CreateDeckResponse,
   GetCardsOptions,
@@ -232,10 +238,14 @@ export async function deleteNote(
 // Model operations
 export async function getModels(): Promise<Model[]> {
   try {
+    console.log("getModels: Starting request");
     const raw = await invoke("plugin:ankidroid-api|getModels");
+    console.log("getModels: Raw response:", JSON.stringify(raw));
     const response = GetModelsResponseSchema.parse(raw);
+    console.log("getModels: Parsed response:", response);
     return response.models;
   } catch (error) {
+    console.error("getModels error details:", error);
     if (error instanceof NotSupportedError) {
       throw error;
     }
@@ -256,15 +266,72 @@ export async function createModel(
 ): Promise<CreateModelResponse> {
   try {
     const raw = await invoke("plugin:ankidroid-api|createModel", request);
-    return CreateModelResponseSchema.parse(raw);
-  } catch (error) {
-    let errorMessage = "Unknown error";
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    } else if (typeof error === "object" && error !== null) {
-      errorMessage = JSON.stringify(error);
+    const response = CreateModelResponseSchema.parse(raw);
+    
+    // Check if the response indicates an error
+    if (!response.success && response.error) {
+      throw new Error(response.error);
     }
+    
+    return response;
+  } catch (error) {
+    // If it's already an Error with a message, use it directly
+    if (error instanceof Error) {
+      throw error;
+    }
+    
+    // Otherwise, try to extract a meaningful message
+    let errorMessage = "Unknown error";
+    if (typeof error === "object" && error !== null) {
+      // Check if error object has an error field
+      const errorObj = error as any;
+      if (errorObj.error) {
+        errorMessage = errorObj.error;
+      } else {
+        errorMessage = JSON.stringify(error);
+      }
+    } else if (typeof error === "string") {
+      errorMessage = error;
+    }
+    
     throw new Error(`Failed to create model: ${errorMessage}`);
+  }
+}
+
+export async function deleteModel(
+  request: DeleteModelRequest
+): Promise<DeleteModelResponse> {
+  try {
+    const raw = await invoke("plugin:ankidroid-api|deleteModel", request);
+    const response = DeleteModelResponseSchema.parse(raw);
+    
+    // Check if the response indicates an error
+    if (!response.success && response.error) {
+      throw new Error(response.error);
+    }
+    
+    return response;
+  } catch (error) {
+    // If it's already an Error with a message, use it directly
+    if (error instanceof Error) {
+      throw error;
+    }
+    
+    // Otherwise, try to extract a meaningful message
+    let errorMessage = "Unknown error";
+    if (typeof error === "object" && error !== null) {
+      // Check if error object has an error field
+      const errorObj = error as any;
+      if (errorObj.error) {
+        errorMessage = errorObj.error;
+      } else {
+        errorMessage = JSON.stringify(error);
+      }
+    } else if (typeof error === "string") {
+      errorMessage = error;
+    }
+    
+    throw new Error(`Failed to delete model: ${errorMessage}`);
   }
 }
 

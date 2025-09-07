@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-createModel"
+description = "Enables the createModel command without any pre-configured scope."
+commands.allow = ["createModel"]
+
+[[permission]]
+identifier = "deny-createModel"
+description = "Denies the createModel command without any pre-configured scope."
+commands.deny = ["createModel"]

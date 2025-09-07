@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import TabNavigation from "../components/TabNavigation";
+import DropdownNavigation from "../components/DropdownNavigation";
 import AnkiConnectionIndicator from "../components/AnkiConnectionIndicator";
 import ErrorDisplay from "../components/ErrorDisplay";
 import { useAnkiContext } from "../contexts/AnkiContext";
@@ -34,9 +34,9 @@ export default function AppLayout({
           )}
         </div>
 
-        {/* Tab Navigation - only show when connected */}
+        {/* Dropdown Navigation - only show when connected */}
         {isConnected && (
-          <TabNavigation
+          <DropdownNavigation
             tabs={tabs}
             activeTab={activeTab}
             onTabChange={(tab) => onTabChange(tab as TabType)}

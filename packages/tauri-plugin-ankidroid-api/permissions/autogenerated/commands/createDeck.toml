@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-createDeck"
+description = "Enables the createDeck command without any pre-configured scope."
+commands.allow = ["createDeck"]
+
+[[permission]]
+identifier = "deny-createDeck"
+description = "Denies the createDeck command without any pre-configured scope."
+commands.deny = ["createDeck"]

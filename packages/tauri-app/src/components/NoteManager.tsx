@@ -295,7 +295,7 @@ export const NoteManager: React.FC<NoteManagerProps> = ({ available }) => {
             >
               <option value={0}>Select a model...</option>
               {models.map((model) => (
-                <option key={model.id} value={model.id}>
+                <option key={model.id} value={model.id} title={model.name}>
                   {model.name}
                 </option>
               ))}
@@ -317,7 +317,7 @@ export const NoteManager: React.FC<NoteManagerProps> = ({ available }) => {
           >
             <option value="">Default deck</option>
             {decks.map((deck) => (
-              <option key={deck.id} value={deck.id}>
+              <option key={deck.id} value={deck.id} title={deck.name}>
                 {deck.name}
               </option>
             ))}
@@ -440,7 +440,7 @@ export const NoteManager: React.FC<NoteManagerProps> = ({ available }) => {
                   {note.fields.map((field, index) => (
                     <div key={index} className="bg-gray-50 rounded-lg p-2.5">
                       <div className="text-xs text-gray-500 font-medium mb-1">Field {index + 1}</div>
-                      <div className="text-sm text-gray-800">{field}</div>
+                      <div className="text-sm text-gray-800 break-words overflow-hidden" title={field} style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any}}>{field}</div>
                     </div>
                   ))}
                 </div>
@@ -450,7 +450,8 @@ export const NoteManager: React.FC<NoteManagerProps> = ({ available }) => {
                     {note.tags.map((tag, index) => (
                       <span
                         key={index}
-                        className="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium"
+                        className="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium max-w-[100px] truncate"
+                        title={tag}
                       >
                         {tag}
                       </span>
@@ -459,7 +460,7 @@ export const NoteManager: React.FC<NoteManagerProps> = ({ available }) => {
                 )}
 
                 {note.sfld && (
-                  <div className="mt-2 text-xs text-gray-500">
+                  <div className="mt-2 text-xs text-gray-500 truncate" title={`Sort: ${note.sfld}`}>
                     Sort: {note.sfld}
                   </div>
                 )}

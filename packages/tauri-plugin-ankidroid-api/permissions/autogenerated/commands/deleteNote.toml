@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-deleteNote"
+description = "Enables the deleteNote command without any pre-configured scope."
+commands.allow = ["deleteNote"]
+
+[[permission]]
+identifier = "deny-deleteNote"
+description = "Denies the deleteNote command without any pre-configured scope."
+commands.deny = ["deleteNote"]

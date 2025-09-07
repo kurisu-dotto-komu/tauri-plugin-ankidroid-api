@@ -307,6 +307,126 @@
           "markdownDescription": "Denies the checkPermission command without any pre-configured scope."
         },
         {
+          "description": "Enables the createDeck command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-createDeck",
+          "markdownDescription": "Enables the createDeck command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the createDeck command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-createDeck",
+          "markdownDescription": "Denies the createDeck command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the createModel command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-createModel",
+          "markdownDescription": "Enables the createModel command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the createModel command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-createModel",
+          "markdownDescription": "Denies the createModel command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the createNote command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-createNote",
+          "markdownDescription": "Enables the createNote command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the createNote command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-createNote",
+          "markdownDescription": "Denies the createNote command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the deleteCard command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-deleteCard",
+          "markdownDescription": "Enables the deleteCard command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the deleteCard command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-deleteCard",
+          "markdownDescription": "Denies the deleteCard command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the deleteModel command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-deleteModel",
+          "markdownDescription": "Enables the deleteModel command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the deleteModel command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-deleteModel",
+          "markdownDescription": "Denies the deleteModel command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the deleteNote command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-deleteNote",
+          "markdownDescription": "Enables the deleteNote command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the deleteNote command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-deleteNote",
+          "markdownDescription": "Denies the deleteNote command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the getCards command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-getCards",
+          "markdownDescription": "Enables the getCards command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the getCards command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-getCards",
+          "markdownDescription": "Denies the getCards command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the getDecks command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-getDecks",
+          "markdownDescription": "Enables the getDecks command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the getDecks command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-getDecks",
+          "markdownDescription": "Denies the getDecks command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the getMedia command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-getMedia",
+          "markdownDescription": "Enables the getMedia command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the getMedia command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-getMedia",
+          "markdownDescription": "Denies the getMedia command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the getModels command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-getModels",
+          "markdownDescription": "Enables the getModels command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the getModels command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-getModels",
+          "markdownDescription": "Denies the getModels command without any pre-configured scope."
+        },
+        {
           "description": "Enables the getNotes command without any pre-configured scope.",
           "type": "string",
           "const": "allow-getNotes",
@@ -317,6 +437,18 @@
           "type": "string",
           "const": "deny-getNotes",
           "markdownDescription": "Denies the getNotes command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the getTemplates command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-getTemplates",
+          "markdownDescription": "Enables the getTemplates command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the getTemplates command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-getTemplates",
+          "markdownDescription": "Denies the getTemplates command without any pre-configured scope."
         },
         {
           "description": "Enables the isAnkiDroidAvailable command without any pre-configured scope.",
@@ -341,6 +473,30 @@
           "type": "string",
           "const": "deny-requestPermission",
           "markdownDescription": "Denies the requestPermission command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the updateCard command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-updateCard",
+          "markdownDescription": "Enables the updateCard command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the updateCard command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-updateCard",
+          "markdownDescription": "Denies the updateCard command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the updateNote command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-updateNote",
+          "markdownDescription": "Enables the updateNote command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the updateNote command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-updateNote",
+          "markdownDescription": "Denies the updateNote command without any pre-configured scope."
         }
       ]
     }

@@ -6,34 +6,32 @@ export default function GreetTab() {
   const [name, setName] = useState("");
 
   async function greet() {
-    setGreetMsg(await invoke("greet", { name }));
+    setGreetMsg(await invoke<string>("greet", { name }));
   }
 
   return (
-    <div>
-      <h2 className="text-xl mb-3">Greet Test</h2>
-      <form
-        className="space-y-3"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Welcome to Tauri!</h1>
+
+      <div className="flex gap-2 mb-4">
         <input
           id="greet-input"
+          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           onChange={(e) => setName(e.currentTarget.value)}
           placeholder="Enter a name..."
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={name}
         />
         <button
-          type="submit"
-          className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 active:bg-blue-700 transition-colors font-medium"
+          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          type="button"
+          onClick={() => greet()}
         >
           Greet
         </button>
-      </form>
+      </div>
+
       {greetMsg && (
-        <p className="mt-3 text-center text-gray-700">{greetMsg}</p>
+        <p className="text-lg text-gray-700">{greetMsg}</p>
       )}
     </div>
   );

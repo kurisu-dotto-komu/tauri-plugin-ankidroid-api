@@ -23,8 +23,7 @@ export const NoteSchema = z.object({
 export const ModelSchema = z.object({
   id: z.number().int(),
   name: z.string(),
-  fieldNames: z.string(),
-  numCards: z.number().int(),
+  fieldNames: z.array(z.string()),
 });
 
 export const DeckSchema = z.object({
@@ -84,6 +83,17 @@ export const CreateModelRequestSchema = z.object({
 export const CreateModelResponseSchema = z.object({
   success: z.boolean(),
   modelId: z.number().int().optional(),
+  error: z.string().optional(),
+});
+
+export const DeleteModelRequestSchema = z.object({
+  modelId: z.number().int(),
+});
+
+export const DeleteModelResponseSchema = z.object({
+  success: z.boolean(),
+  deletedRows: z.number().int().optional(),
+  message: z.string().optional(),
   error: z.string().optional(),
 });
 

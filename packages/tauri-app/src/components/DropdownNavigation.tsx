@@ -7,13 +7,13 @@ export interface Tab {
   icon: string;
 }
 
-interface TabNavigationProps {
+interface DropdownNavigationProps {
   tabs: Tab[];
   activeTab: string;
   onTabChange: (tab: string) => void;
 }
 
-export default function TabNavigation({ tabs, activeTab, onTabChange }: TabNavigationProps) {
+export default function DropdownNavigation({ tabs, activeTab, onTabChange }: DropdownNavigationProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const currentTab = tabs.find((tab) => tab.key === activeTab);
 
@@ -23,9 +23,9 @@ export default function TabNavigation({ tabs, activeTab, onTabChange }: TabNavig
         onClick={() => setDropdownOpen(!dropdownOpen)}
         className="w-full flex items-center justify-between px-4 py-2 active:bg-gray-50 transition-colors"
       >
-        <span className="flex items-center gap-2 text-sm font-semibold text-gray-800">
-          <span className="text-lg">{currentTab?.icon}</span>
-          {currentTab?.label}
+        <span className="flex items-center gap-2 text-sm font-semibold text-gray-800 min-w-0 flex-1">
+          <span className="text-lg flex-shrink-0">{currentTab?.icon}</span>
+          <span className="truncate" title={currentTab?.label}>{currentTab?.label}</span>
         </span>
         <LuChevronDown
           className={`w-4 h-4 text-gray-400 transition-transform ${
@@ -51,8 +51,8 @@ export default function TabNavigation({ tabs, activeTab, onTabChange }: TabNavig
                 index < tabs.length - 1 ? "border-b border-gray-100" : ""
               }`}
             >
-              <span className="text-lg">{tab.icon}</span>
-              <span className="text-sm font-medium">{tab.label}</span>
+              <span className="text-lg flex-shrink-0">{tab.icon}</span>
+              <span className="text-sm font-medium truncate flex-1 min-w-0" title={tab.label}>{tab.label}</span>
               {activeTab === tab.key && (
                 <LuCheck className="w-4 h-4 ml-auto text-blue-600" />
               )}

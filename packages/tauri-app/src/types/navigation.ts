@@ -4,6 +4,7 @@ export type TabType =
   | "models"
   | "decks"
   | "cards"
+  | "templates"
   | "media"
   | "api-test";
 

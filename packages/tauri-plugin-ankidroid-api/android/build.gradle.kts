@@ -32,4 +32,6 @@ dependencies {
     implementation(project(":tauri-android"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("androidx.core:core-ktx:1.12.0")
+    // AnkiDroid AddContentApi for model creation
+    implementation("com.github.ankidroid:Anki-Android:api-v1.1.0")
 }

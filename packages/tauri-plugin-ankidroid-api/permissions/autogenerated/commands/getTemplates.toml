@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-getTemplates"
+description = "Enables the getTemplates command without any pre-configured scope."
+commands.allow = ["getTemplates"]
+
+[[permission]]
+identifier = "deny-getTemplates"
+description = "Denies the getTemplates command without any pre-configured scope."
+commands.deny = ["getTemplates"]

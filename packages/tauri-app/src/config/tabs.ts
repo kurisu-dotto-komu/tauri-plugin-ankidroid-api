@@ -6,6 +6,7 @@ export const APP_TABS: Tab[] = [
   { key: "decks", label: "Decks", icon: "📚" },
   { key: "cards", label: "Cards", icon: "🃏" },
   { key: "media", label: "Media", icon: "🎬" },
+  { key: "templates", label: "Templates", icon: "🎨" },
   { key: "api-test", label: "API Test", icon: "🧪" },
   { key: "greet", label: "Greet", icon: "👋" },
 ];
